@@ -1,4 +1,3 @@
-
 package org.firstinspires.ftc;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
@@ -8,7 +7,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 //@Disabled
-@TeleOp(name = "Allcode", group = "Opmode RamEaters")
+@TeleOp(name = "Allcode", group = "Opmode ProfoundPython")
 
 public class Allcode extends OpMode {
 

@@ -23,7 +23,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 
 import java.util.List;
 
-@Autonomous(name = "RedRightSidePark", group = "Opmode RamEaters")
+@Autonomous(name = "RedRightSidePark", group = "Opmode ProfoundPython")
 public class RedRightSidePark extends LinearOpMode {
 
     private static final boolean USE_WEBCAM = true;  // true for webcam, false for phone camera
@@ -33,10 +33,11 @@ public class RedRightSidePark extends LinearOpMode {
     private static final String TFOD_MODEL_ASSET = "MyModelStoredAsAsset.tflite";
     // TFOD_MODEL_FILE points to a model file stored onboard the Robot Controller's storage,
     // this is used when uploading models directly to the RC using the model upload interface.
-    private static final String TFOD_MODEL_FILE = "/sdcard/FIRST/tflitemodels/myCustomModel.tflite";
+    private static final String TFOD_MODEL_FILE = "/sdcard/FIRST/tflitemodels/Teamprop.tflite";
     // Define the labels recognized in the model for TFOD (must be in training order!)
     private static final String[] LABELS = {
-       "Pixel",
+       "Redprop",
+       "Blueprop"
     };
 
     /**
@@ -73,7 +74,6 @@ public class RedRightSidePark extends LinearOpMode {
         move(1000,0,0,0.5,500);
         move(0,9000,0,1,500);
 		move(0,9000,0,1,500);
-        telemetry.update();
 
     }
 

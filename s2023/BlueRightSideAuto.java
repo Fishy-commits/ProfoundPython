@@ -23,7 +23,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 
 import java.util.List;
 
-@Autonomous(name = "BlueRightSideAuto", group = "Opmode RamEaters")
+@Autonomous(name = "BlueRightSideAuto", group = "Opmode ProfoundPython")
 public class BlueRightSideAuto extends LinearOpMode {
 
     private static final boolean USE_WEBCAM = true;  // true for webcam, false for phone camera
@@ -90,13 +90,13 @@ public class BlueRightSideAuto extends LinearOpMode {
             sleep(1000);
             initPosition();
             sleep(4000);
-            gyroTurn(-10);
-            move(0,3000,0,0.6,900);
-            move(20000,0,0,1,500);
-            move(20000,0,0,1,500);
-            move(20000,0,0,1,500);
-            move(20000,0,0,1,500);
-            move(10000,0,0,0.7,500);
+            //gyroTurn(-10);
+            ///move(0,3000,0,0.6,900);
+            //move(20000,0,0,1,500);
+            //move(20000,0,0,1,500);
+            //move(20000,0,0,1,500);
+            //move(20000,0,0,1,500);
+            //move(10000,0,0,0.7,500);
         }
         else if (loc == 2)            //center
         {
@@ -107,11 +107,11 @@ public class BlueRightSideAuto extends LinearOpMode {
             sleep(1000);
             initPosition();
             sleep(5000);
-            move(0,3000,0,0.6,900);
-            move(20000,0,0,1,500);
-            move(20000,0,0,1,500);
-            move(20000,0,0,1,500);
-            move(20000,0,0,1,500);
+            //move(0,3000,0,0.6,900);
+            //move(20000,0,0,1,500);
+            //move(20000,0,0,1,500);
+            //move(20000,0,0,1,500);
+            //move(20000,0,0,1,500);
         }
         else if (loc == 3){                //right
             move(250,0,0,0.3,500);
@@ -122,13 +122,13 @@ public class BlueRightSideAuto extends LinearOpMode {
             sleep(1000);
             initPosition();
             sleep(4000);
-            gyroTurn(10);
-            move(0,3000,0,0.6,900);
-            move(20000,0,0,1,500);
-            move(20000,0,0,1,500);
-            move(20000,0,0,1,500);
-            move(20000,0,0,1,500);
-            move(10000,0,0,0.7,500);
+            //gyroTurn(10);
+            //move(0,3000,0,0.6,900);
+            //move(20000,0,0,1,500);
+            //move(20000,0,0,1,500);
+            //move(20000,0,0,1,500);
+            //move(20000,0,0,1,500);
+            //move(10000,0,0,0.7,500);
         }
 
         telemetry.update();
@@ -177,7 +177,6 @@ public class BlueRightSideAuto extends LinearOpMode {
 
         if (opModeIsActive()) {
             int r = detecLocation();
-            telemetry.update();
             caseLoc(r);
 
             //sleep(15000);
@@ -397,6 +396,8 @@ public class BlueRightSideAuto extends LinearOpMode {
 
         List<Recognition> currentRecognitions = tfod.getRecognitions();
         telemetry.addData("# Objects Detected", currentRecognitions.size());
+		telemetry.update();
+		
         while (opModeIsActive() && j < iTimeOut) {
             // Step through the list of recognitions and display info for each one.
             for (Recognition recognition : currentRecognitions) {
@@ -411,16 +412,19 @@ public class BlueRightSideAuto extends LinearOpMode {
                 if (x < 182)
                 {
                     telemetry.addData("I am at", "Left");
+					telemetry.update();
                     return 1;
                 }
                 else if (x > 344)
                 {
                     telemetry.addData("I am at", "Right");
+					telemetry.update();
                     return 3;
                 }
                 else
                 {
                     telemetry.addData("I am at", "Center");
+					telemetry.update();
                     return 2;
                 }
                 
@@ -432,6 +436,7 @@ public class BlueRightSideAuto extends LinearOpMode {
         }
         
         telemetry.addData("I can't find team prop so choose default location", "Left");
+		telemetry.update();
         return 1;
 
     } 
