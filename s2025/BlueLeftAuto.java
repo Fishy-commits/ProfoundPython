@@ -1,26 +1,14 @@
 package org.firstinspires.ftc;
 
-import android.graphics.Color;
-import android.util.Size;                                                            //color sensor
-import org.firstinspires.ftc.vision.opencv.ImageRegion;
-import org.firstinspires.ftc.vision.opencv.PredominantColorProcessor;
-
-import com.qualcomm.hardware.rev.Rev2mDistanceSensor;
-import com.qualcomm.robotcore.hardware.DistanceSensor;                                //distance sensor
-import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
-
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
-
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.BuiltinCameraDirection;
@@ -30,17 +18,13 @@ import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 
+
 import java.util.List;
 
+@Autonomous(name = "BlueLeftAuto", group = "Opmode ProfoundPython")
+public class BlueLeftAuto extends LinearOpMode {
 
-@Autonomous(name = "AutoTest", group = "Opmode Profound Pythons")
-public class AutoTest extends LinearOpMode {
 
-    private DistanceSensor sensorDistance;
-    private PredominantColorProcessor colorSensor;
-
-    private VisionPortal portal;
-    private String savedColorMatch = "NULL";        //
     private DcMotor leftWheelF = null;               //Left Wheel Front
     private DcMotor leftWheelR = null;               //Left Wheel Back
     private DcMotor rightWheelF = null;              //Right Wheel Front
@@ -58,162 +42,45 @@ public class AutoTest extends LinearOpMode {
     private double TURN_P = 0.010;
     
     private int target0 = 0;
+    private int target1 = 0;
     private int target2 = 0;
     private int slideMotorTarget = 0;
-    private double tclawCenter = 0.2;                    //Claw Center Servo initial position
+    private double tclawCenter = 0;                    //Claw Center Servo initial position
     private int on_off1 = 0;                        //An indicator for left claw open/close status 
     private int on_off2 = 0;                        //An indicator for right claw open/close status
-    private boolean findTargetColor = false;
     
     String test = "";
     
+        private void caseLoc() {
+            placeSample();
+            move(5000,2000,0,0.5,500);
+            sleep(500);
+            gyroTurn(150);
+            sleep(500);
+            move(0,3000,0,0.5,500);
+            move(0,3500,0,0.5,500);
+            move(3000,0,0,0.5,500);
+            move(3800,0,0,0.5,500);
+            openClaw();
+            sleep(1000);
+            move(-3800,0,0,0.5,500);
+            initPosition();
+            sleep(1500);
+            move(2000,0,0,0.5,500);
+            sleep(10000);
+            
+
+
+        
+        telemetry.update();
+
+    }
+
     @Override
     public void runOpMode() {
-        
+
         imuInit();
-        initColorSensor();
-        initMotors();
-        //initDistanceSensor();
 
-        initPosition();
-
-        waitForStart();
-
-        if (opModeIsActive()) {
-            if(detectColor("YELLOW"))
-            {
-                if(detectDistance() > 10){
-                move(100,0,0,0.4,500);    
-                }
-                
-            }    else {
-                
-            }
-                
-            //sleep(15000);
-        }
-
-    } 
-private double detectDistance(){
-return 10;    
-    
-}
-
-    //To open left claws
-    private void openClaw() {
-        clawLeft.setPosition(0.2);
-        clawRight.setPosition(0);
-        telemetry.addData("Status: ", "Open both claws");
-        telemetry.update();
-    }
-    
-    //To close left claws
-    private void closeClaw() {
-        clawLeft.setPosition(0.1);
-        clawRight.setPosition(0.1);
-        telemetry.addData("Status: ", "Close both claws");
-        telemetry.update();
-    }
-    
-    //To grab the pixel, move both primary and secondary single bars to their positions
-    private void grabPixel() {
-        target2 = 975;
-        target0 = 0 - target2;
-        liftmotor0.setTargetPosition(target0);
-        liftmotor2.setTargetPosition(target2);
-        liftmotor0.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        liftmotor1.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        liftmotor2.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        liftmotor0.setPower(0.1);
-        liftmotor1.setPower(0.1);
-        liftmotor2.setPower(0.1);
-        clawCenter.setPosition(0.20);
-        telemetry.addData("Status", "grabPixel");
-        telemetry.update();
-    } 
-    
-    //To move both primary and secondary single bars to their initial positions
-    private void initPosition() {
-        target0 = 0;
-        target2 = 0;
-        slideMotorTarget = 0;
-        liftmotor0.setTargetPosition(target0);
-        liftmotor2.setTargetPosition(target2);
-        liftmotor0.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        liftmotor2.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
-        liftmotor0.setPower(0.15);
-        liftmotor2.setPower(0.15);
-        
-        clawCenter.setPosition(tclawCenter);
-        
-        slideMotor.setTargetPosition(slideMotorTarget);
-        slideMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        slideMotor.setPower(1);        
-        
-        telemetry.addData("Status: ", "Initial Position");
-        telemetry.update();
-    }
-
-    //To move both primary and secondary single bars to their initial positions
-    private void goBackToInit() {
-        target2 = 300;
-        target0 = 0 - target2;
-        
-        liftmotor0.setTargetPosition(target0);
-        liftmotor2.setTargetPosition(target2);
-        liftmotor0.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        liftmotor1.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        liftmotor2.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
-        liftmotor0.setPower(0.15);
-        liftmotor1.setPower(0.1);
-        liftmotor2.setPower(0.15);
-        
-        clawCenter.setPosition(0.45);
-        telemetry.addData("Status", "Go Back to Init Position");
-        telemetry.update();
-
-    }
-    
-    //To move the robot to the board, move both primary and secondary single bars to their positions
-    private void movePosition(){
-        target2 = 875;
-        target0 = 0 - target2;
-        
-        liftmotor0.setTargetPosition(target0);
-        liftmotor2.setTargetPosition(target2);
-        liftmotor0.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        liftmotor1.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        liftmotor2.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
-        liftmotor0.setPower(0.15);
-        liftmotor1.setPower(0.1);
-        liftmotor2.setPower(0.15);
-
-    }
-    
-    //To put the pixel to the board, move both primary and secondary single bars to their positions
-    private void putPixel(){
-        target2 = 650;
-        target0 = 0 - target2;
-        
-        liftmotor0.setTargetPosition(target0);
-        liftmotor2.setTargetPosition(target2);
-        liftmotor0.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        liftmotor1.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        liftmotor2.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
-        liftmotor0.setPower(0.15);
-        liftmotor1.setPower(0.1);
-        liftmotor2.setPower(0.15);
-        
-        clawCenter.setPosition(0);
-        telemetry.addData("Status", "putPixel");
-        telemetry.update();
-    }
-    private void initMotors(){
-    
         leftWheelF = hardwareMap.get(DcMotor.class, "M0");
         rightWheelF = hardwareMap.get(DcMotor.class, "M1");
         leftWheelR = hardwareMap.get(DcMotor.class, "M2");
@@ -241,80 +108,149 @@ return 10;
         liftmotor2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
         clawLeft = hardwareMap.get(Servo.class, "Es1");
-        clawRight = hardwareMap.get(Servo.class, "Es2");
-        clawCenter = hardwareMap.get(Servo.class, "Es0");
-        
+        clawRight = hardwareMap.get(Servo.class, "Es0");
+        clawCenter = hardwareMap.get(Servo.class, "Es2");
+
         slideMotor = hardwareMap.get(DcMotor.class, "Em1");       
         slideMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         slideMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-    }
-    /*
-    private void initDistanceSensor(){
-    
-        sensorDistance = hardwareMap.get(DistanceSensor.class, "sensor_distance");
-
-        Rev2mDistanceSensor sensorTimeOfFlight = (Rev2mDistanceSensor) sensorDistance;
         
+        initPosition();
+
         waitForStart();
-    }
-    */
-    private void initColorSensor() {
-        colorSensor = new PredominantColorProcessor.Builder()
-                .setRoi(ImageRegion.asUnityCenterCoordinates(-0.1, 0.1, 0.1, -0.1))
-                .setSwatches(
-                        PredominantColorProcessor.Swatch.RED,
-                        PredominantColorProcessor.Swatch.BLUE,
-                        PredominantColorProcessor.Swatch.YELLOW,
-                        PredominantColorProcessor.Swatch.BLACK,
-                        PredominantColorProcessor.Swatch.WHITE)
-                .build();
-            
-
-        portal = new VisionPortal.Builder()
-                .addProcessor(colorSensor)
-                .setCameraResolution(new Size(320, 240))
-                .setCamera(hardwareMap.get(WebcamName.class, "Webcam 1"))
-                .build();
-
-        telemetry.setMsTransmissionInterval(50);  // Speed up telemetry updates, Just use for debugging.
-
-    }   // end method initColorSensor()
-
-    private boolean detectColor(String targetColor) {
-        boolean find = false;
-
-        while (opModeIsActive() || opModeInInit())
-        {
-            telemetry.addData("DS preview on/off", "3 dots, Camera Stream\n");
-            PredominantColorProcessor.Result result = colorSensor.getAnalysis();
-            
-            telemetry.addData("Best Match:", result.closestSwatch);
-            telemetry.addLine(String.format("R %3d, G %3d, B %3d", Color.red(result.rgb), Color.green(result.rgb), Color.blue(result.rgb)));
-            telemetry.update();
-
-        if (result.closestSwatch == PredominantColorProcessor.Swatch.RED)     {        //red
-            savedColorMatch = "RED";
-        }
-        else if (result.closestSwatch == PredominantColorProcessor.Swatch.BLUE){
-            savedColorMatch = "BLUE";
-        }
-        else if (result.closestSwatch == PredominantColorProcessor.Swatch.YELLOW){
-            savedColorMatch = "YELLOW";
-        }
-        
-        if(savedColorMatch == targetColor){
-            find = true;
-            break;
-        }else{
-            move(500,0,0,0.4,300);
-            sleep(20);
-        }
-        }
-        
-        return find;
+        caseLoc();
 
     } 
+        private void closeClaw(){
+        clawLeft.setPosition(0.1);
+        clawRight.setPosition(0.1);
+        telemetry.addData("Status: ", "Close both claws");
+        telemetry.update();
+    }
+        private void openClaw() {
+        clawLeft.setPosition(0.3);
+        clawRight.setPosition(0);
+        telemetry.addData("Status: ", "Open both claws");
+        telemetry.update();
+    }
+    
+    //To grab the pixel, move both primary and secondary single bars to their positions
+    private void placeSample() {
+        target2 = 1500;
+           target0 = 0 - target2;
+           liftmotor0.setTargetPosition(target0);
+           liftmotor2.setTargetPosition(target2);
+           liftmotor0.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+           liftmotor2.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
+           liftmotor0.setPower(0.5);
+           liftmotor2.setPower(0.5);
+           telemetry.addData("Status: ", "Press Gamepad1.dpad_up to raise both bars and be ready to hang");
+           telemetry.update();
+           
+           clawLeft.setPosition(0.1);
+           clawRight.setPosition(0.1); 
+           clawCenter.setPosition(0);
+
+           slideMotorTarget = -6500;
+            slideMotor.setTargetPosition(slideMotorTarget);
+            slideMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            slideMotor.setPower(5); 
+    } 
+    
+    //To move both primary and secondary single bars to their initial positions
+    private void initPosition() {
+        target2 = 0;
+        target0 = 0 - target2;
+        target1 = 0;
+        
+        liftmotor0.setTargetPosition(target0);
+        liftmotor1.setTargetPosition(target1);
+        liftmotor2.setTargetPosition(target2);
+        liftmotor0.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        liftmotor1.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        liftmotor2.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        liftmotor0.setPower(0.15);
+        liftmotor1.setPower(0.1);
+        liftmotor2.setPower(0.15);
+        //clawCenter.setPosition(0);
+        clawCenter.setPosition(tclawCenter);
+        closeClaw();
+        
+        slideMotorTarget = 0;
+            slideMotor.setTargetPosition(slideMotorTarget);
+            slideMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            slideMotor.setPower(5); 
+
+        telemetry.addData("Status", "initPosition");
+        telemetry.update();
+    }
+
+    //To move both primary and secondary single bars to their initial positions
+    private void goBackToInit() {
+        target2 = 300;
+        target0 = 0 - target2;
+        target1 = 500;
+        
+        liftmotor0.setTargetPosition(target0);
+        liftmotor1.setTargetPosition(target1);
+        liftmotor2.setTargetPosition(target2);
+        liftmotor0.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        liftmotor1.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        liftmotor2.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        liftmotor0.setPower(0.15);
+        liftmotor1.setPower(0.1);
+        liftmotor2.setPower(0.15);
+        
+        clawCenter.setPosition(0);
+        telemetry.addData("Status", "Go Back to Init Position");
+        telemetry.update();
+
+    }
+    
+    //To move the robot to the board, move both primary and secondary single bars to their positions
+    private void movePosition(){
+        target2 = 875;
+        target0 = 0 - target2;
+        target1 = 500;
+        
+        liftmotor0.setTargetPosition(target0);
+        liftmotor1.setTargetPosition(target1);
+        liftmotor2.setTargetPosition(target2);
+        liftmotor0.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        liftmotor1.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        liftmotor2.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        liftmotor0.setPower(0.15);
+        liftmotor1.setPower(0.1);
+        liftmotor2.setPower(0.15);
+
+    }
+    
+    //To put the pixel to the board, move both primary and secondary single bars to their positions
+    private void putPixel(){
+        target2 = 650;
+        target0 = 0 - target2;
+        target1 = 500;
+        
+        liftmotor0.setTargetPosition(target0);
+        liftmotor1.setTargetPosition(target1);
+        liftmotor2.setTargetPosition(target2);
+        liftmotor0.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        liftmotor1.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        liftmotor2.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        liftmotor0.setPower(0.15);
+        liftmotor1.setPower(0.1);
+        liftmotor2.setPower(0.15);
+        
+        clawCenter.setPosition(0);
+        telemetry.addData("Status", "putPixel");
+        telemetry.update();
+    }
+    
     private void move(double drive,
                       double strafe,
                       double rotate, double power, int iSleep) {
@@ -370,7 +306,9 @@ return 10;
         YawPitchRollAngles orientation = imu.getRobotYawPitchRollAngles();
         return orientation.getYaw(AngleUnit.DEGREES);
     }
+
     private void imuInit() {
+
         RevHubOrientationOnRobot.LogoFacingDirection logoDirection = RevHubOrientationOnRobot.LogoFacingDirection.UP;
         RevHubOrientationOnRobot.UsbFacingDirection  usbDirection  = RevHubOrientationOnRobot.UsbFacingDirection.FORWARD;
         RevHubOrientationOnRobot orientationOnRobot = new RevHubOrientationOnRobot(logoDirection, usbDirection);
@@ -379,7 +317,9 @@ return 10;
         // This sample expects the IMU to be in a REV Hub and named "imu".
         imu = hardwareMap.get(IMU.class, "imu");
         imu.initialize(new IMU.Parameters(orientationOnRobot));
+
     }
+
     private void justTurn(double deg) {
 
         leftWheelF.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);

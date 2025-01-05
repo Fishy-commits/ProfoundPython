@@ -1,12 +1,12 @@
 package org.firstinspires.ftc;
 
 import android.graphics.Color;
-import android.util.Size;                                                            //color sensor
+import android.util.Size;															//color sensor
 import org.firstinspires.ftc.vision.opencv.ImageRegion;
 import org.firstinspires.ftc.vision.opencv.PredominantColorProcessor;
 
 import com.qualcomm.hardware.rev.Rev2mDistanceSensor;
-import com.qualcomm.robotcore.hardware.DistanceSensor;                                //distance sensor
+import com.qualcomm.robotcore.hardware.DistanceSensor;								//distance sensor
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
@@ -33,14 +33,13 @@ import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import java.util.List;
 
 
-@Autonomous(name = "AutoTest", group = "Opmode Profound Pythons")
+@TeleOp(name = "AutoTest", group = "Opmode Profound Pythons")
 public class AutoTest extends LinearOpMode {
 
-    private DistanceSensor sensorDistance;
-    private PredominantColorProcessor colorSensor;
 
-    private VisionPortal portal;
-    private String savedColorMatch = "NULL";        //
+
+    private VisionPortal visionPortal;
+	private String savedColorMatch = "NULL";		//
     private DcMotor leftWheelF = null;               //Left Wheel Front
     private DcMotor leftWheelR = null;               //Left Wheel Back
     private DcMotor rightWheelF = null;              //Right Wheel Front
@@ -54,26 +53,25 @@ public class AutoTest extends LinearOpMode {
     private Servo clawLeft = null;
     private Servo clawRight = null;
     private final ElapsedTime runtime = new ElapsedTime();
-    private IMU imu;
     private double TURN_P = 0.010;
     
     private int target0 = 0;
     private int target2 = 0;
-    private int slideMotorTarget = 0;
-    private double tclawCenter = 0.2;                    //Claw Center Servo initial position
+	private int slideMotorTarget = 0;
+    private double tclawCenter = 0.45;                    //Claw Center Servo initial position
+    private double planeTarget = 0.5;               //Airplane Servo initial position
     private int on_off1 = 0;                        //An indicator for left claw open/close status 
     private int on_off2 = 0;                        //An indicator for right claw open/close status
     private boolean findTargetColor = false;
-    
+	
     String test = "";
     
     @Override
     public void runOpMode() {
-        
-        imuInit();
+
         initColorSensor();
-        initMotors();
-        //initDistanceSensor();
+		initDistanceSensor();
+		initMotors();
 
         initPosition();
 
@@ -81,23 +79,26 @@ public class AutoTest extends LinearOpMode {
 
         if (opModeIsActive()) {
             if(detectColor("YELLOW"))
-            {
-                if(detectDistance() > 10){
-                move(100,0,0,0.4,500);    
-                }
-                
-            }    else {
-                
-            }
-                
+				MoveToTarget();
+
             //sleep(15000);
         }
 
     } 
-private double detectDistance(){
-return 10;    
-    
-}
+
+private void MoveToTarget() {	
+
+		
+      
+
+		// After exiting the vision loop...
+		if (savedColorMatch == "RED")     {		//red
+		// your code here: robot actions if the ROI was RED
+        }
+
+        telemetry.update();
+
+    }
 
     //To open left claws
     private void openClaw() {
@@ -109,7 +110,7 @@ return 10;
     
     //To close left claws
     private void closeClaw() {
-        clawLeft.setPosition(0.1);
+	    clawLeft.setPosition(0.1);
         clawRight.setPosition(0.1);
         telemetry.addData("Status: ", "Close both claws");
         telemetry.update();
@@ -134,7 +135,7 @@ return 10;
     
     //To move both primary and secondary single bars to their initial positions
     private void initPosition() {
-        target0 = 0;
+		target0 = 0;
         target2 = 0;
         slideMotorTarget = 0;
         liftmotor0.setTargetPosition(target0);
@@ -212,9 +213,9 @@ return 10;
         telemetry.addData("Status", "putPixel");
         telemetry.update();
     }
-    private void initMotors(){
-    
-        leftWheelF = hardwareMap.get(DcMotor.class, "M0");
+	private void initMotors();{
+	
+	    leftWheelF = hardwareMap.get(DcMotor.class, "M0");
         rightWheelF = hardwareMap.get(DcMotor.class, "M1");
         leftWheelR = hardwareMap.get(DcMotor.class, "M2");
         rightWheelR = hardwareMap.get(DcMotor.class, "M3");
@@ -243,23 +244,19 @@ return 10;
         clawLeft = hardwareMap.get(Servo.class, "Es1");
         clawRight = hardwareMap.get(Servo.class, "Es2");
         clawCenter = hardwareMap.get(Servo.class, "Es0");
-        
-        slideMotor = hardwareMap.get(DcMotor.class, "Em1");       
-        slideMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        slideMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-    }
-    /*
-    private void initDistanceSensor(){
-    
+	}
+	private void initDistanceSensor(){
+	
         sensorDistance = hardwareMap.get(DistanceSensor.class, "sensor_distance");
 
         Rev2mDistanceSensor sensorTimeOfFlight = (Rev2mDistanceSensor) sensorDistance;
-        
-        waitForStart();
-    }
-    */
+		
+		waitForStart();
+	}
+	
     private void initColorSensor() {
-        colorSensor = new PredominantColorProcessor.Builder()
+
+        PredominantColorProcessor colorSensor = new PredominantColorProcessor.Builder()
                 .setRoi(ImageRegion.asUnityCenterCoordinates(-0.1, 0.1, 0.1, -0.1))
                 .setSwatches(
                         PredominantColorProcessor.Swatch.RED,
@@ -270,7 +267,7 @@ return 10;
                 .build();
             
 
-        portal = new VisionPortal.Builder()
+        VisionPortal portal = new VisionPortal.Builder()
                 .addProcessor(colorSensor)
                 .setCameraResolution(new Size(320, 240))
                 .setCamera(hardwareMap.get(WebcamName.class, "Webcam 1"))
@@ -287,28 +284,27 @@ return 10;
         {
             telemetry.addData("DS preview on/off", "3 dots, Camera Stream\n");
             PredominantColorProcessor.Result result = colorSensor.getAnalysis();
-            
+			
             telemetry.addData("Best Match:", result.closestSwatch);
             telemetry.addLine(String.format("R %3d, G %3d, B %3d", Color.red(result.rgb), Color.green(result.rgb), Color.blue(result.rgb)));
             telemetry.update();
 
-        if (result.closestSwatch == PredominantColorProcessor.Swatch.RED)     {        //red
-            savedColorMatch = "RED";
-        }
-        else if (result.closestSwatch == PredominantColorProcessor.Swatch.BLUE){
-            savedColorMatch = "BLUE";
-        }
-        else if (result.closestSwatch == PredominantColorProcessor.Swatch.YELLOW){
-            savedColorMatch = "YELLOW";
-        }
-        
-        if(savedColorMatch == targetColor){
-            find = true;
-            break;
-        }else{
-            move(500,0,0,0.4,300);
-            sleep(20);
-        }
+		if (result.closestSwatch == Swatch.RED)     {		//red
+			savedColorMatch = "RED";
+		}
+		else if (result.closestSwatch == Swatch.BLUE){
+			savedColorMatch = "BLUE";
+		}
+		else{
+			savedColorMatch = "YELLOW";
+		}
+		
+		if(savedColorMatch = targetColor){
+			find = true;
+			break;
+		}else{
+			sleep(20);
+		}
         }
         
         return find;
@@ -370,16 +366,7 @@ return 10;
         YawPitchRollAngles orientation = imu.getRobotYawPitchRollAngles();
         return orientation.getYaw(AngleUnit.DEGREES);
     }
-    private void imuInit() {
-        RevHubOrientationOnRobot.LogoFacingDirection logoDirection = RevHubOrientationOnRobot.LogoFacingDirection.UP;
-        RevHubOrientationOnRobot.UsbFacingDirection  usbDirection  = RevHubOrientationOnRobot.UsbFacingDirection.FORWARD;
-        RevHubOrientationOnRobot orientationOnRobot = new RevHubOrientationOnRobot(logoDirection, usbDirection);
 
-        // Now initialize the IMU with this mounting orientation
-        // This sample expects the IMU to be in a REV Hub and named "imu".
-        imu = hardwareMap.get(IMU.class, "imu");
-        imu.initialize(new IMU.Parameters(orientationOnRobot));
-    }
     private void justTurn(double deg) {
 
         leftWheelF.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
