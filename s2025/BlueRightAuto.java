@@ -52,13 +52,64 @@ public class BlueRightAuto extends LinearOpMode {
     String test = "";
     
         private void caseLoc() {
-
-        move(200,0,0,0.7,500);
-        move(0,5000,0,0.7,500);
-        move(0,5000,0,0.7,500);
-        move(0,5000,0,0.7,500);
-        sleep(2000000);
-
+        raiseBar();
+        move(0,-4000,0,0.5,500);
+        move(6000,0,0,0.5,500);
+        riseClaw();
+        sleep(1000);
+        move(4800,0,0,0.5,500);
+        lowerClaw();
+        sleep(1000);
+        move(-750,0,0,0.4,500);
+        openClaw();
+        move(-3000,0,0,0.4,500);
+        initPosition();
+        gyroTurn(-100);
+        //move(0,0,-7000,0.4,500);
+        move(0, 0, 100, 0.3, 500);
+        move(0,500,0,0.4,500);
+        gyroTurn(-90);
+        move(3000,0,0,0.3,500);
+        move(5000,0,0,0.3,500);
+        move(5000,0,0,0.3,500);
+        move(5000,0,0,0.3,500);
+        //move(1500,0,0,0.5,500);
+        openClaw();
+        move(4000, 0, 0, 0.3, 500);
+        sleep(2000);
+        closeClaw();
+        sleep(1000);
+        gyroTurn(15);
+        move(0, -5000, 0, 0.4, 500);
+        move(0, -5000, 0, 0.4, 500);
+        move(0, -5000, 0, 0.4, 500);
+        move(0, -5000, 0, 0.4, 500);
+        move(0, -5000, 0, 0.4, 500);
+        move(0, -5000, 0, 0.4, 500);
+        gyroTurn(-10);
+        raiseBar();
+        move(3000,0,0,0.5,500);
+        riseClaw();
+        sleep(1000);
+        move(4000,0,0,0.3,500);
+        sleep(1000);
+        lowerClaw();
+        sleep(1000);
+        move(-750,0,0,0.4,500);
+        openClaw();
+        move(-700,0,0,0.3,500);
+        initPosition();
+        sleep(3000);
+        //move(0,5000,0,0.6,500);
+        //move(0,4000,0,0.6,500);
+        //move(5000,0,0,0.6,500);
+        //move(5000,0,0,0.6,500);
+        //move(5000,0,0,0.6,500);
+        //move(5000,0,0,0.6,500);
+        //move(0,3500,0,0.6,500);
+        //move(-5000,0,0,0.7,500);
+        //move(-5000,0,0,0.7,500);
+        //move(-2500,0,0,0.7,500);
         
         telemetry.update();
 
@@ -197,46 +248,44 @@ public class BlueRightAuto extends LinearOpMode {
     }
     
     //To move the robot to the board, move both primary and secondary single bars to their positions
-    private void movePosition(){
-        target2 = 875;
-        target0 = 0 - target2;
-        target1 = 500;
+    private void raiseBar(){
         
-        liftmotor0.setTargetPosition(target0);
-        liftmotor1.setTargetPosition(target1);
-        liftmotor2.setTargetPosition(target2);
-        liftmotor0.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        liftmotor1.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        liftmotor2.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
-        liftmotor0.setPower(0.15);
-        liftmotor1.setPower(0.1);
-        liftmotor2.setPower(0.15);
+            target2 = 1000;
+            target0 = 0 - target2;
+            //target1 = 3000;
+            liftmotor0.setTargetPosition(target0);
+            //liftmotor1.setTargetPosition(target1);
+            liftmotor2.setTargetPosition(target2);
+            liftmotor0.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            //liftmotor1.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            liftmotor2.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            
+            liftmotor0.setPower(0.3);
+            //liftmotor1.setPower(0.2);
+            liftmotor2.setPower(0.3);
+           
+            telemetry.addData("Status: ", "Press Gamepad1.dpad_down to retrack the bars");
+            telemetry.update();
+            
 
     }
     
     //To put the pixel to the board, move both primary and secondary single bars to their positions
-    private void putPixel(){
-        target2 = 650;
-        target0 = 0 - target2;
-        target1 = 500;
+    private void riseClaw(){
         
-        liftmotor0.setTargetPosition(target0);
-        liftmotor1.setTargetPosition(target1);
-        liftmotor2.setTargetPosition(target2);
-        liftmotor0.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        liftmotor1.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        liftmotor2.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
-        liftmotor0.setPower(0.15);
-        liftmotor1.setPower(0.1);
-        liftmotor2.setPower(0.15);
-        
-        clawCenter.setPosition(0);
-        telemetry.addData("Status", "putPixel");
-        telemetry.update();
+        //tclawCenter = tclawCenter + 0.01;
+            clawCenter.setPosition(+0.05);
+            telemetry.addData("Status: ", "Press Gamepad2.right_trigger to rotate claws upwards");
+            telemetry.update();
     }
     
+     private void lowerClaw(){
+        
+        //tclawCenter = tclawCenter + 0.01;
+            clawCenter.setPosition(-0.03);
+            telemetry.addData("Status: ", "Press Gamepad2.right_trigger to rotate claws upwards");
+            telemetry.update();
+    }
     private void move(double drive,
                       double strafe,
                       double rotate, double power, int iSleep) {

@@ -220,26 +220,6 @@ public class Allcode extends OpMode {
 
         } else if (gamepad2.a) {//when the A button of gamepad 2 is pressed, the sliding moter goes to xyz1 position
 
-             target2 = 1500;
-           target0 = 0 - target2;
-           //target1 = 400;
-           liftmotor0.setTargetPosition(target0);
-           //liftmotor1.setTargetPosition(target1);
-           liftmotor2.setTargetPosition(target2);
-           liftmotor0.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-           //liftmotor1.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-           liftmotor2.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
-           liftmotor0.setPower(0.5);
-           //liftmotor1.setPower(0.1);
-           liftmotor2.setPower(0.5);
-           telemetry.addData("Status: ", "Press Gamepad1.dpad_up to raise both bars and be ready to hang");
-           telemetry.update();
-           
-           //closeClaw();
-           
-
-
         if (random % 2 == 0) {
                 slideMotor.setDirection(DcMotor.Direction.FORWARD);
             } else {
@@ -273,13 +253,13 @@ public class Allcode extends OpMode {
             openClaw();
         
         } else if (gamepad2.left_trigger > 0.2 && tclawCenter >0) {        //when the dpad_up of gamepad 2 is pressed, claws rotate upwards
-            tclawCenter = tclawCenter - 0.003;
+            tclawCenter = tclawCenter - 0.001;
             clawCenter.setPosition(tclawCenter);
             telemetry.addData("Status: ", "Press Gamepad2.left_trigger to rotat claws downwards");
             telemetry.update();
         
         } else if (gamepad2.right_trigger > 0.2 ) {    //when dpad_down of gamepad 2 is pressed, claws rotate downwards
-            tclawCenter = tclawCenter + 0.003;
+            tclawCenter = tclawCenter + 0.001;
             clawCenter.setPosition(tclawCenter);
             telemetry.addData("Status: ", "Press Gamepad2.right_trigger to rotate claws upwards");
             telemetry.update();

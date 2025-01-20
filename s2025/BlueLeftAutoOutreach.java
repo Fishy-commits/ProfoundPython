@@ -21,8 +21,8 @@ import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 
 import java.util.List;
 
-@Autonomous(name = "BlueLeftAuto", group = "Opmode ProfoundPython")
-public class BlueLeftAuto extends LinearOpMode {
+@Autonomous(name = "BlueLeftAutoOutreach", group = "Opmode ProfoundPython")
+public class BlueLeftAutoOutreach extends LinearOpMode {
 
 
     private DcMotor leftWheelF = null;               //Left Wheel Front
@@ -52,44 +52,22 @@ public class BlueLeftAuto extends LinearOpMode {
     String test = "";
     
         private void caseLoc() {
-
             placeSample();
             move(5000,2000,0,0.5,500);
             sleep(500);
             gyroTurn(150);
             sleep(500);
-            move(0,2000,0,0.3,500);
-            move(0,700,0,0.3,500);
+            move(0,3000,0,0.5,500);
+            move(0,3500,0,0.5,500);
             move(3000,0,0,0.5,500);
-            move(1000,0,0,0.5,500);
-            openClaw();
-            sleep(600);
-            move(-4500,0,0,0.5,500);
-            initPosition();
-            gyroTurn(-100);
-            sleep(1000);
-            gyroTurn(6);
+            move(3800,0,0,0.5,500);
             openClaw();
             sleep(1000);
-            riseClaw();
-            sleep(1000);
-            GrabSample();
-            justTurn(0);
-            move(350,0,0,0.3,500);
-            sleep(1000);
-            closeClaw();
-            sleep(1000);
+            move(-3800,0,0,0.5,500);
             initPosition();
-            gyroTurn(170);
-            placeSample();
-            sleep(2500);
-            move(2800,0,0,0.5,500);
-            sleep(700);
-            openClaw();
-            move(-5000,0,0,0.5,500);
-            initPosition();
-            sleep(2000);
-            sleep(150000);
+            sleep(1500);
+            move(2000,0,0,0.5,500);
+            sleep(10000);
             
 
 
@@ -210,13 +188,26 @@ public class BlueLeftAuto extends LinearOpMode {
     }
 
     //To move both primary and secondary single bars to their initial positions
-    private void GrabSample() {
+    private void goBackToInit() {
+        target2 = 300;
+        target0 = 0 - target2;
+        target1 = 500;
         
-    slideMotorTarget = -1000;
+        liftmotor0.setTargetPosition(target0);
+        liftmotor1.setTargetPosition(target1);
+        liftmotor2.setTargetPosition(target2);
+        liftmotor0.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        liftmotor1.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        liftmotor2.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
-            slideMotor.setTargetPosition(slideMotorTarget);
-            slideMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            slideMotor.setPower(5);
+        liftmotor0.setPower(0.15);
+        liftmotor1.setPower(0.1);
+        liftmotor2.setPower(0.15);
+        
+        clawCenter.setPosition(0);
+        telemetry.addData("Status", "Go Back to Init Position");
+        telemetry.update();
+
     }
     
     //To move the robot to the board, move both primary and secondary single bars to their positions
@@ -259,13 +250,7 @@ public class BlueLeftAuto extends LinearOpMode {
         telemetry.addData("Status", "putPixel");
         telemetry.update();
     }
-    private void riseClaw(){
-        
-        //tclawCenter = tclawCenter + 0.01;
-            clawCenter.setPosition(0.02);
-            telemetry.addData("Status: ", "Press Gamepad2.right_trigger to rotate claws upwards");
-            telemetry.update();
-    }
+    
     private void move(double drive,
                       double strafe,
                       double rotate, double power, int iSleep) {
