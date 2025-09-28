@@ -4,18 +4,21 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
-@TeleOp(name = "Run at 50 RPM", group = "Examples")
-public class RunAt50RPM extends LinearOpMode {
+@TeleOp(name = "Intake Wheels at 50 RPM", group = "Examples")
+public class IntakeWheelsAt50RPM extends LinearOpMode {
 
-    DcMotor motor;
+    DcMotor intakeWheelR;
+    DcMotor intakeWheelL;
 
     @Override
     public void runOpMode() {
-        // Initialize motor from configuration
-        motor = hardwareMap.get(DcMotor.class, "motorName"); // Replace with your motor name
+        // Initialize motors from configuration
+        intakeWheelR = hardwareMap.get(DcMotor.class, "intakeWheelR"); // M2
+        intakeWheelL = hardwareMap.get(DcMotor.class, "intakeWheelL"); // M3
 
         // Set mode to use encoder for velocity control
-        motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        intakeWheelR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        intakeWheelL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         // Calculate target velocity in ticks per second
         double targetRPM = 50;
@@ -24,18 +27,21 @@ public class RunAt50RPM extends LinearOpMode {
 
         waitForStart();
 
-        // Set motor velocity
-        motor.setVelocity(targetTicksPerSecond);
-
-        // Keep running while OpMode is active
         while (opModeIsActive()) {
-            telemetry.addData("Target RPM", targetRPM);
-            telemetry.addData("Current Velocity (ticks/sec)", motor.getVelocity());
-            telemetry.addData("Current RPM", (motor.getVelocity() * 60.0) / ticksPerRev);
+            if (gamepad2.x) {
+                // Run both motors at 50 RPM
+                intakeWheelR.setVelocity(targetTicksPerSecond);
+                intakeWheelL.setVelocity(targetTicksPerSecond);
+            } else {
+                // Stop motors when button is not pressed
+                intakeWheelR.setVelocity(0);
+                intakeWheelL.setVelocity(0);
+            }
+
+            telemetry.addData("Button Pressed", gamepad2.x);
+            telemetry.addData("Right RPM", (intakeWheelR.getVelocity() * 60.0) / ticksPerRev);
+            telemetry.addData("Left RPM", (intakeWheelL.getVelocity() * 60.0) / ticksPerRev);
             telemetry.update();
         }
-
-        // Stop motor when OpMode ends
-        motor.setVelocity(0);
     }
 }
