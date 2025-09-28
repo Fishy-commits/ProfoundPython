@@ -5,7 +5,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
 @TeleOp(name = "Intake Wheels at 50 RPM", group = "Examples")
-public class IntakeWheelsAt50RPM extends LinearOpMode {
+public class RpmSpeed extends LinearOpMode {
 
     DcMotor intakeWheelR;
     DcMotor intakeWheelL;
