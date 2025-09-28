@@ -9,6 +9,7 @@ public class RpmSpeed extends LinearOpMode {
 
     DcMotor intakeWheelR;
     DcMotor intakeWheelL;
+    double targetTicksPerSecond = 50;
 
     @Override
     public void runOpMode() {
@@ -20,12 +21,8 @@ public class RpmSpeed extends LinearOpMode {
         intakeWheelR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         intakeWheelL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-        // Calculate target velocity in ticks per second
-        double targetRPM = 50;
-        double ticksPerRev = 560; // Example for REV HD Hex motor
-        double targetTicksPerSecond = (targetRPM * ticksPerRev) / 60.0; // ≈ 466.67
+       
 
-        waitForStart();
 
         while (opModeIsActive()) {
             if (gamepad2.x) {
@@ -43,5 +40,13 @@ public class RpmSpeed extends LinearOpMode {
             telemetry.addData("Left RPM", (intakeWheelL.getVelocity() * 60.0) / ticksPerRev);
             telemetry.update();
         }
+    }
+     
+     // Calculate target velocity in ticks per second
+    private setVelocity(targetTicksPerSecond){
+        double targetRPM = 50;
+        double ticksPerRev = 560; // Example for REV HD Hex motor
+        double targetTicksPerSecond = (targetRPM * ticksPerRev) / 60.0; // ≈ 466.67
+        waitForStart(); 
     }
 }
