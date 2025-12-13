@@ -19,9 +19,11 @@ public class FullCode26 extends OpMode {
     private DcMotor intakeLiftL = null;
     private DcMotor intakeLiftR = null;
     private Servo rotateServo = null;
-	private Servo centerServo = null;
+    private Servo centerServo = null;
     private DcMotor intakeWheelL = null;
     private DcMotor intakeWheelR = null;
+    private Servo pushL = null;
+    private Servo pushR = null;
 
     private int targetL = 0;
     private int targetR = 0;
@@ -41,7 +43,9 @@ public class FullCode26 extends OpMode {
         intakeWheelL = hardwareMap.get(DcMotor.class, "intakeWheelL"); // Em2
         intakeWheelR = hardwareMap.get(DcMotor.class, "intakeWheelR"); // Em3
         rotateServo = hardwareMap.get(Servo.class, "rotateServo");     // S0
-		centerServo = hardwareMap.get(Servo.class, "centerServo");     // s1
+        pushL = hardwareMap.get(Servo.class, "pushL");                   // s1
+        pushR = hardwareMap.get(Servo.class, "pushR");                   // s2
+        centerServo = hardwareMap.get(Servo.class, "centerServo");     // Es0
 
         initPosition();
     }
@@ -55,17 +59,42 @@ public class FullCode26 extends OpMode {
     public void start() {
         runtime.reset();
     }
+    private void blockerIn() {
+        centerServo.setPosition(0.1);
+    }
+    private void blockerOut() {
+        centerServo.setPosition(1);
+    }
+    
+    private void pushOut(){
+        pushL.setPosition(0.3);
+        pushR.setPosition(0.4);
+        telemetry.addData("Status: ", "Close both claws");
+        telemetry.update();
+    }
+    
+
+    private void pushBack() {
+        pushL.setPosition(0.7);
+        pushR.setPosition(0);
+        telemetry.addData("Status: ", "Open both claws");
+        telemetry.update();
+    }
 
     private void initPosition() {
-        targetL = -75;
-        targetR = 75;
+        targetL = -325;
+        targetR = 325;
         intakeLiftL.setTargetPosition(targetL);
         intakeLiftL.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         intakeLiftR.setTargetPosition(targetR);
         intakeLiftR.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        pushL.setPosition(0.7);
+        pushR.setPosition(0);
+        centerServo.setPosition(1.0);
+        rotateServo.setPosition(0.0);
 
-        intakeLiftL.setPower(0.15);
-        intakeLiftR.setPower(0.15);
+        intakeLiftL.setPower(0.1);
+        intakeLiftR.setPower(0.1);
 
         telemetry.addData("Status", "Initial Position");
         telemetry.update();
@@ -86,11 +115,11 @@ public class FullCode26 extends OpMode {
         intakeWheelL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         if (gamepad2.right_trigger > 0.1) {
-            intakeWheelL.setPower(intakePower * 0.04);
-            intakeWheelR.setPower(-intakePower * 0.04);
+            intakeWheelL.setPower(intakePower * 0.032);
+            intakeWheelR.setPower(-intakePower * 0.032);
         } else if (gamepad2.left_trigger > 0.1) {
-            intakeWheelL.setPower(-intakePower * 0.017);
-            intakeWheelR.setPower(intakePower * 0.017);
+            intakeWheelL.setPower(-intakePower * 0.028);
+            intakeWheelR.setPower(intakePower * 0.028);
         } else {
             intakeWheelL.setPower(0);
             intakeWheelR.setPower(0);
@@ -98,8 +127,8 @@ public class FullCode26 extends OpMode {
 
         // lift up
         if (gamepad2.dpad_up) {
-            targetL = -324;
-            targetR = 324;
+            targetL = -300;
+            targetR = 300;
             intakeLiftL.setTargetPosition(targetL);
             intakeLiftL.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             intakeLiftR.setTargetPosition(targetR);
@@ -110,8 +139,8 @@ public class FullCode26 extends OpMode {
 
         // lift down
         if (gamepad2.dpad_down) {
-            targetL = -75;
-            targetR = 75;
+            targetL = -70;
+            targetR = 50;
             intakeLiftL.setTargetPosition(targetL);
             intakeLiftL.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             intakeLiftR.setTargetPosition(targetR);
@@ -119,28 +148,45 @@ public class FullCode26 extends OpMode {
             intakeLiftL.setPower(0.2);
             intakeLiftR.setPower(0.2);
         }
+        
+         else if (gamepad2.a) {
+            blockerIn();
+        }
+         else if (gamepad2.b) {
+             blockerOut();
+        }
+        
+        else if (gamepad2.right_bumper) {    //when the right_bumper of gamepad 2 is pressed, claws are closed
+           
+            pushOut();
 
-		// === 3-step servo rotation ===
-		boolean dpadLeftPressed = gamepad2.dpad_left || gamepad2.dpad_right;
+        }
+        else if (gamepad2.left_bumper) {    //when the left_bumper of gamepad2 is pressed, claws are opened
+            
+            pushBack();
+        
+        }
+        // === 3-step servo rotation ===
+        boolean dpadLeftPressed = gamepad2.dpad_left || gamepad2.dpad_right;
 
-		if (dpadLeftPressed && !dpadLeftPrev) {
-			servoStep++; // move to next position
-			if (servoStep > 2) servoStep = 0; // loop back after third
+        if (dpadLeftPressed && !dpadLeftPrev) {
+            servoStep++; // move to next position
+            if (servoStep > 2) servoStep = 0; // loop back after third
 
-			// three tuned positions (adjust as needed)
-			switch (servoStep) {
-				case 0:
-					rotateServo.setPosition(0.0);
-					break;
-				case 1:
-					rotateServo.setPosition(0.43);
-					break;
-				case 2:
-					rotateServo.setPosition(0.92);
-					break;
-			}
-		}
-		dpadLeftPrev = dpadLeftPressed;
+            // three tuned positions (adjust as needed)
+            switch (servoStep) {
+                case 0:
+                    rotateServo.setPosition(0.0);
+                    break;
+                case 1:
+                    rotateServo.setPosition(0.45);
+                    break;
+                case 2:
+                    rotateServo.setPosition(0.94);
+                    break;
+            }
+        }
+        dpadLeftPrev = dpadLeftPressed;
 
         // drive system
         double powerLeftF, powerRightF, powerLeftR, powerRightR;
