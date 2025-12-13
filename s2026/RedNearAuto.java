@@ -32,6 +32,10 @@ public class RedNearAuto extends LinearOpMode {
     private DcMotor intakeWheelL = null;
     private DcMotor intakeWheelR = null;
     private Servo rotateServo = null;
+    private Servo centerServo = null;
+    private Servo pushL = null;
+    private Servo pushR = null;
+
     
     private IMU imu;
     private double TURN_P = 0.010;
@@ -60,11 +64,14 @@ public class RedNearAuto extends LinearOpMode {
         waitForStart();
 
         if (opModeIsActive()) {
-        //move(2000,0,0,0.5,500); //move
-        //sleep(500);
-        //gyroTurn(60);
+        move(9000,0,0,0.9,500);
+        move(9000,0,0,0.7,500);
+        move(9000,0,0,0.5,500);
+        move(9000,0,0,0.5,500);
+        move(4500,0,0,0.5,500);
+        gyroTurnRelative(125); 
+        gyroTurnRelative(125);
         caseLoc();
-        
         }
     }
 
@@ -82,7 +89,10 @@ public class RedNearAuto extends LinearOpMode {
         intakeWheelL = hardwareMap.get(DcMotor.class, "intakeWheelL");
         intakeWheelR = hardwareMap.get(DcMotor.class, "intakeWheelR");
         rotateServo = hardwareMap.get(Servo.class, "rotateServo");
-        
+        centerServo = hardwareMap.get(Servo.class, "centerServo");     // Es0
+        pushL = hardwareMap.get(Servo.class, "pushL");                   // s1
+        pushR = hardwareMap.get(Servo.class, "pushR");                   // s2
+
         initPosition();
     }
     
@@ -101,8 +111,8 @@ public class RedNearAuto extends LinearOpMode {
 
     private void initPosition() {
         // Set starting lift target positions
-        targetL = -75;
-        targetR = 75;
+        targetL = -325;
+        targetR = 325;
 
         intakeLiftL.setTargetPosition(targetL);
         intakeLiftR.setTargetPosition(targetR);
@@ -113,11 +123,22 @@ public class RedNearAuto extends LinearOpMode {
         // Low power just to hold initial position
         intakeLiftL.setPower(0.15);
         intakeLiftR.setPower(0.15);
+        centerServo.setPosition(0.1);
+        rotateServo.setPosition(0.0);
+        pushL.setPosition(0.7);
+        pushR.setPosition(0);
 
         telemetry.addData("Status", "Initial Position Set");
         telemetry.update();
     }
-
+    
+    private void blockerIn() {
+        centerServo.setPosition(0.1);
+    }
+    private void blockerOut() {
+        centerServo.setPosition(1);
+    }
+    
     
     /** Initialize AprilTag detection */
     private void initAprilTag() {
@@ -137,7 +158,7 @@ public class RedNearAuto extends LinearOpMode {
     /** Reads AprilTag ID and performs path actions */
     /** Reads AprilTag ID and performs path actions */
 private void caseLoc() {
-    while (opModeIsActive()) {   // Loop continuously while OpMode runs
+
     int tagID = getAprilTagID();  // Clear variable storing current detected ID
 
     boolean tag21 = false;
@@ -147,36 +168,91 @@ private void caseLoc() {
     // Logic to set the correct boolean true
     if (tagID == 21) {
         tag21 = true;
-        telemetry.addLine("Performing path for Tag 21"); 
+        telemetry.addLine("Performing path for Tag 21");
+        gyroTurnRelative(-65); 
+        sleep(1000);
+        intakeLiftUp();
+        intakeOut();
+        sleep(2000);
+        move(-1000,500,0,0.6,500);
+        move(500,500,0,0.6,500);
+        move(400,0,0,0.5,500);
+        sleep(1000);
         rotateServoPrev(); // move to first position
-        sleep(2000);
+        sleep(1000);
+        blockerOut();
+        sleep(1000);
+        pushOut();
+        sleep(1000);
+        pushBack();
+        sleep(700);
         rotateServoPrev(); // move to second position
-        sleep(2000);
+        sleep(1000);
+        pushOut();
+        sleep(1000);
+        pushBack();
+        sleep(700);
         rotateServoPrev(); // move to third position
-        sleep(2000);
-        //add the move stuff that happens after the first set of balls are shot (aka picking up stuff on ground) 
+        sleep(1000);
+        pushOut();
+        sleep(1000);
+        pushBack();
     } else if (tagID == 22) {
         tag22 = true;
         telemetry.addLine("Performing path for Tag 22");
-        //add the move stuff here (like moving to right place for camera and moving to shooting place etc...)
-        rotateServoNext();
-        sleep(2000);
-        rotateServoNext();
-        sleep(2000);
-        rotateServoNext();
-        sleep(2000);
-        //add the move stuff that happens after the first set of balls are shot (aka picking up stuff on ground)
+        gyroTurnRelative(-65); 
+        intakeLiftUp();
+        intakeOut();
+        sleep(1000);
+        blockerOut();
+        move(-1000,500,0,0.6,500);
+        move(500,500,0,0.6,500);
+        move(400,0,0,0.5,500);
+        sleep(500);
+        pushOut();
+        sleep(1000);
+        pushBack();
+        //sleep(1000);
+        //rotateServoPrev();// move to first position
+        sleep(1000);
+        pushOut();
+        sleep(1000);
+        pushBack();
+        sleep(700);
+        rotateServoPrev(); // move to second position
+        sleep(1000);
+        pushOut();
+        sleep(1000);
+        pushBack();
+        sleep(700);
     } else if (tagID == 23) {
         tag23 = true;
         telemetry.addLine("Performing path for Tag 23");
-        //same as before
-        rotateServoNext();
+        gyroTurnRelative(-65); 
+        sleep(1000);
+        intakeLiftUp();
+        intakeOut();
         sleep(2000);
-        rotateServoPrev();
-        sleep(2000);
-        rotateServoPrev();
-        sleep(2000);
-        //same here
+        blockerOut();
+        move(-1000,500,0,0.6,500);
+        move(500,500,0,0.6,500);
+        move(400,0,0,0.5,500);
+        sleep(500);
+        pushOut();
+        sleep(1000);
+        pushBack();
+        rotateServoNext(); // move to first position
+        sleep(1000);
+        pushOut();
+        sleep(1000);
+        pushBack();
+        sleep(700);
+        rotateServoNext(); // move to second position
+        sleep(1000);
+        pushOut();
+        sleep(1000);
+        pushBack();
+        sleep(700);
     }
      else {
         telemetry.addLine("No valid AprilTag detected.");
@@ -189,10 +265,9 @@ private void caseLoc() {
     telemetry.addData("Tag23", tag23);
 
     telemetry.update();
-    sleep(10000);  // small delay to prevent telemetry spam
+    sleep(1000);  // small delay to prevent telemetry spam
 }
 
-}
 
 /** Return AprilTag ID, or -1 if none */
 private int getAprilTagID() {
@@ -219,17 +294,47 @@ private int getAprilTagID() {
 }
 
     /** Movement helper method */
-    private void move(double drive, double strafe, double rotate, double power, int iSleep) {
+        private void move(double drive,
+                      double strafe,
+                      double rotate, double power, int iSleep) {
 
-        double powerLeftF = drive + strafe + rotate;
-        double powerLeftR = drive - strafe + rotate;
-        double powerRightF = drive - strafe - rotate;
-        double powerRightR = drive + strafe - rotate;
+        double powerLeftF;
+        double powerRightF;
+        double powerLeftR;
+        double powerRightR;
 
-        leftWheelF.setPower(powerLeftF * power);
-        leftWheelR.setPower(powerLeftR * power);
-        rightWheelF.setPower(powerRightF * power);
-        rightWheelR.setPower(powerRightR * power);
+        powerLeftF = drive + strafe + rotate;
+        powerLeftR = drive - strafe + rotate;
+
+        powerRightF = drive - strafe - rotate;
+        powerRightR = drive + strafe - rotate;
+
+        leftWheelF.setPower(power);
+        leftWheelR.setPower(power);
+        rightWheelF.setPower(power);
+        rightWheelR.setPower(power);
+
+        leftWheelF.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        leftWheelR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        rightWheelF.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        rightWheelR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        leftWheelF.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        leftWheelR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightWheelF.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightWheelR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+
+        leftWheelF.setTargetPosition(leftWheelF.getCurrentPosition() + (int) (-powerLeftF));
+        leftWheelR.setTargetPosition(leftWheelR.getCurrentPosition() + (int) (-powerLeftR));
+
+        rightWheelF.setTargetPosition(rightWheelF.getCurrentPosition() + (int) (powerRightF));
+        rightWheelR.setTargetPosition(rightWheelR.getCurrentPosition() + (int) (powerRightR));
+
+        leftWheelF.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        leftWheelR.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        rightWheelF.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        rightWheelR.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
         sleep(iSleep);
 
@@ -237,6 +342,7 @@ private int getAprilTagID() {
         leftWheelR.setPower(0);
         rightWheelF.setPower(0);
         rightWheelR.setPower(0);
+
     }
         /** Moves servo through 3-step sequence automatically */
     private void rotateServoNext() {
@@ -249,11 +355,11 @@ private int getAprilTagID() {
                 telemetry.addData("Rotate Servo", "Position 0 (0.0)");
                 break;
             case 1:
-                rotateServo.setPosition(0.43);
+                rotateServo.setPosition(0.45);
                 telemetry.addData("Rotate Servo", "Position 1 (0.43)");
                 break;
             case 2:
-                rotateServo.setPosition(0.92);
+                rotateServo.setPosition(0.94);
                 telemetry.addData("Rotate Servo", "Position 2 (0.92)");
                 break;
         }
@@ -268,11 +374,11 @@ private int getAprilTagID() {
 
     switch (servoStep) {
         case 2:
-            rotateServo.setPosition(0.92);
+            rotateServo.setPosition(0.94);
             telemetry.addData("Rotate Servo", "Position 2 (0.92)");
             break;
         case 1:
-            rotateServo.setPosition(0.43);
+            rotateServo.setPosition(0.45);
             telemetry.addData("Rotate Servo", "Position 1 (0.43)");
             break;
         case 0:
@@ -287,20 +393,20 @@ private int getAprilTagID() {
     
         /** Spins intake wheels inward (to collect) */
     private void intakeIn() {
-        intakeWheelL.setPower(intakePower * 0.4);
-        intakeWheelR.setPower(-intakePower * 0.4);
+        intakeWheelL.setPower(-intakePower * 0.62);
+        intakeWheelR.setPower(intakePower * 0.62);
     }
 
     /** Spins intake wheels outward (to eject) */
     private void intakeOut() {
-        intakeWheelL.setPower(-intakePower * 0.4);
-        intakeWheelR.setPower(intakePower * 0.4);
+        intakeWheelL.setPower(intakePower * 0.52);
+        intakeWheelR.setPower(-intakePower * 0.52);
     }
 
     /** Lifts intake up */
     private void intakeLiftUp() {
-        targetL = -324;
-        targetR = 324;
+        targetL = -320;
+        targetR = 320;
 
         intakeLiftL.setTargetPosition(targetL);
         intakeLiftR.setTargetPosition(targetR);
@@ -327,6 +433,33 @@ private int getAprilTagID() {
         intakeLiftR.setPower(0.2);
     }
     
+    private void pushOut(){   
+        pushL.setPosition(0.3);
+        pushR.setPosition(0.4);
+        telemetry.addData("Status: ", "Close both claws");
+        telemetry.update();
+    }
+    
+    private void pushBack(){   
+        pushL.setPosition(0.7);
+        pushR.setPosition(0);
+        telemetry.addData("Status: ", "Open both claws");
+        telemetry.update();
+    }
+    
+    private void gyroTurnRelative(double relativeAngle) {
+        double currentHeading = getHeading();
+
+        double targetAngle = currentHeading + relativeAngle;
+
+        if (targetAngle > 180)  targetAngle -= 360;
+        if (targetAngle < -180) targetAngle += 360;
+
+        gyroTurn(targetAngle);
+    }
+
+
+    
         public double getHeading() {
             YawPitchRollAngles orientation = imu.getRobotYawPitchRollAngles();
             return orientation.getYaw(AngleUnit.DEGREES);
@@ -346,34 +479,33 @@ private int getAprilTagID() {
         int i = 0;
         int iMAX = 200;
 
-        while (i < iMAX && opModeIsActive() && delta > 0.01)
-        {
+        while (i < iMAX && opModeIsActive() && delta > 1.0) // 1 deg tolerance
+                                                            {
+        double error_degrees = target_angle - currentHeading;
 
-            double error_degrees = (target_angle - currentHeading) % 360.0;
+        // Normalize to shortest path
+        if (error_degrees > 180)  error_degrees -= 360;
+        if (error_degrees < -180) error_degrees += 360;
 
-            double motor_output = Range.clip(error_degrees * TURN_P, -0.6, 0.6);
+        double motor_output = Range.clip(error_degrees * TURN_P, -0.6, 0.6);
 
-            if (Math.abs(motor_output) < 0.020)
-                i = 10001;
+        leftWheelF.setPower(motor_output);
+        leftWheelR.setPower(motor_output);
+        rightWheelF.setPower(motor_output);
+        rightWheelR.setPower(motor_output);
 
-            leftWheelF.setPower(1 * motor_output);
-            leftWheelR.setPower(1 * motor_output);
-            rightWheelF.setPower(1 * motor_output);
-            rightWheelR.setPower(1 * motor_output);
+        currentHeading = getHeading();
+        delta = Math.abs(error_degrees);
 
+        telemetry.addData("Target", target_angle);
+        telemetry.addData("Heading", currentHeading);
+        telemetry.addData("Error", error_degrees);
+        telemetry.addData("Power", motor_output);
+        telemetry.update();
 
-            currentHeading = getHeading();
-            telemetry.addData("motor_output : ", motor_output);
-            telemetry.addData("target_angle : ", target_angle);
-            telemetry.addData("currentHeading : ", currentHeading);
-            delta = Math.abs((currentHeading- target_angle));
-            telemetry.addData("delta : ", delta);
+        i++;
+    }
 
-            i++;
-            telemetry.addData("i : ", i);
-            telemetry.update();
-
-        }
 
         //sleep(500);
 
