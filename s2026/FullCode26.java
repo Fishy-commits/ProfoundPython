@@ -6,6 +6,9 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
+import com.qualcomm.robotcore.hardware.DistanceSensor;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+
 
 @TeleOp(name = "Intake Wheels at 50 RPM", group = "Examples")
 public class FullCode26 extends OpMode {
@@ -24,12 +27,23 @@ public class FullCode26 extends OpMode {
     private DcMotor intakeWheelR = null;
     private Servo pushL = null;
     private Servo pushR = null;
+    //private DistanceSensor sensorRange;
+
 
     private int targetL = 0;
     private int targetR = 0;
 
-    private int servoStep = 0;
-    private boolean dpadLeftPrev = false; // tracks button press state
+    private int servoStepLeft = 0;
+    private int servoStepRight = 0;
+
+    private boolean dpadLeftPrev = false;
+    private boolean dpadRightPrev = false;
+
+    
+    //private static final double TARGET_DISTANCE_IN = 24.0; // perfect shooting distance
+    //private static final double DIST_TOLERANCE = 1.0;       // ±1 inch
+    //private static final double ALIGN_SPEED = 0.25;         // slow & controlled
+
 
     @Override
     public void init() {
@@ -46,6 +60,8 @@ public class FullCode26 extends OpMode {
         pushL = hardwareMap.get(Servo.class, "pushL");                   // s1
         pushR = hardwareMap.get(Servo.class, "pushR");                   // s2
         centerServo = hardwareMap.get(Servo.class, "centerServo");     // Es0
+        //sensorRange = hardwareMap.get(DistanceSensor.class, "sensor_range");
+
 
         initPosition();
     }
@@ -80,6 +96,36 @@ public class FullCode26 extends OpMode {
         telemetry.addData("Status: ", "Open both claws");
         telemetry.update();
     }
+    /*    private void autoAlignToGoal() {
+        double distance = sensorRange.getDistance(DistanceUnit.INCH);
+
+        // SAFETY FIRST
+        if (!Double.isFinite(distance)) {
+            setDrivePower(0);
+            telemetry.addData("AutoAlign", "Invalid distance");
+            return;
+        }
+
+        if (distance > TARGET_DISTANCE_IN + DIST_TOLERANCE) {
+            setDrivePower(ALIGN_SPEED);
+        } 
+        else if (distance < TARGET_DISTANCE_IN - DIST_TOLERANCE) {
+            setDrivePower(-ALIGN_SPEED);
+        } 
+        else {
+            setDrivePower(0);
+        }
+
+        telemetry.addData("AutoAlign Distance", distance);
+    }
+    private void setDrivePower(double power) {
+        leftWheelF.setPower(-power);
+        leftWheelR.setPower(-power);
+        rightWheelF.setPower(power);
+        rightWheelR.setPower(power);
+} */
+
+
 
     private void initPosition() {
         targetL = -325;
@@ -101,6 +147,14 @@ public class FullCode26 extends OpMode {
     }
 
     private void move() {
+        
+        // AUTO ALIGN (highest priority)
+     /*   if (gamepad1.x) {
+            autoAlignToGoal();
+            telemetry.update();
+            return;
+        }
+*/
         double drive = -gamepad1.left_stick_y;
         double strafe = gamepad1.left_stick_x;
         double rotateLeft = gamepad1.left_trigger;
@@ -114,21 +168,36 @@ public class FullCode26 extends OpMode {
         intakeWheelR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         intakeWheelL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-        if (gamepad2.right_trigger > 0.1) {
-            intakeWheelL.setPower(intakePower * 0.032);
-            intakeWheelR.setPower(-intakePower * 0.032);
-        } else if (gamepad2.left_trigger > 0.1) {
-            intakeWheelL.setPower(-intakePower * 0.028);
-            intakeWheelR.setPower(intakePower * 0.028);
+        double normalOuttakePower = intakePower * 0.0325;    //far shots
+        double closeOuttakePower  = intakePower * 0.07;   // close shots
+        double intakeInPower      = intakePower * 0.028;
+
+        // Priority order matters
+        if (gamepad2.right_trigger > 0.1) { //far shots
+            // Normal outtake
+            intakeWheelL.setPower(normalOuttakePower);
+            intakeWheelR.setPower(-normalOuttakePower);
+
+        } else if (gamepad2.left_trigger > 0.1) { //close shots
+            // Close-range outtake
+            intakeWheelL.setPower(closeOuttakePower);
+            intakeWheelR.setPower(-closeOuttakePower);
+
+        } else if (gamepad2.x) {
+            // Intake (button instead of trigger)
+            intakeWheelL.setPower(-intakeInPower);
+            intakeWheelR.setPower(intakeInPower);
+
         } else {
             intakeWheelL.setPower(0);
             intakeWheelR.setPower(0);
         }
 
+
         // lift up
         if (gamepad2.dpad_up) {
-            targetL = -300;
-            targetR = 300;
+            targetL = -320;
+            targetR = 320;
             intakeLiftL.setTargetPosition(targetL);
             intakeLiftL.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             intakeLiftR.setTargetPosition(targetR);
@@ -139,8 +208,8 @@ public class FullCode26 extends OpMode {
 
         // lift down
         if (gamepad2.dpad_down) {
-            targetL = -70;
-            targetR = 50;
+            targetL = -100;
+            targetR = 80;
             intakeLiftL.setTargetPosition(targetL);
             intakeLiftL.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             intakeLiftR.setTargetPosition(targetR);
@@ -153,28 +222,26 @@ public class FullCode26 extends OpMode {
             blockerIn();
         }
          else if (gamepad2.b) {
-             blockerOut();
+            blockerOut();
         }
+
         
         else if (gamepad2.right_bumper) {    //when the right_bumper of gamepad 2 is pressed, claws are closed
-           
             pushOut();
 
         }
         else if (gamepad2.left_bumper) {    //when the left_bumper of gamepad2 is pressed, claws are opened
-            
             pushBack();
         
         }
-        // === 3-step servo rotation ===
-        boolean dpadLeftPressed = gamepad2.dpad_left || gamepad2.dpad_right;
+        // === 3-step servo rotation (LEFT) ===
+        boolean dpadLeftPressed = gamepad2.dpad_left;
 
         if (dpadLeftPressed && !dpadLeftPrev) {
-            servoStep++; // move to next position
-            if (servoStep > 2) servoStep = 0; // loop back after third
+            servoStepLeft++;
+            if (servoStepLeft > 2) servoStepLeft = 0;
 
-            // three tuned positions (adjust as needed)
-            switch (servoStep) {
+            switch (servoStepLeft) {
                 case 0:
                     rotateServo.setPosition(0.0);
                     break;
@@ -188,6 +255,29 @@ public class FullCode26 extends OpMode {
         }
         dpadLeftPrev = dpadLeftPressed;
 
+
+        // === 3-step servo rotation (RIGHT – DIFFERENT POSITIONS) ===
+        boolean dpadRightPressed = gamepad2.dpad_right;
+
+        if (dpadRightPressed && !dpadRightPrev) {
+            servoStepRight++;
+            if (servoStepRight > 2) servoStepRight = 0;
+
+            switch (servoStepRight) {
+                case 0:
+                    rotateServo.setPosition(0.14);
+                    break;
+                case 1:
+                    rotateServo.setPosition(0.61);
+                    break;
+                case 2:
+                    rotateServo.setPosition(1);
+                    break;
+            }
+        }
+        dpadRightPrev = dpadRightPressed;
+
+
         // drive system
         double powerLeftF, powerRightF, powerLeftR, powerRightR;
 
@@ -197,20 +287,20 @@ public class FullCode26 extends OpMode {
             powerRightF = drive - strafe - rotateRight + rotateLeft;
             powerRightR = drive + strafe - rotateRight + rotateLeft;
 
-            leftWheelF.setPower(-powerLeftF * 0.7);
-            leftWheelR.setPower(-powerLeftR * 0.7);
-            rightWheelF.setPower(powerRightF * 0.7);
-            rightWheelR.setPower(powerRightR * 0.7);
+            leftWheelF.setPower(-powerLeftF * 1);
+            leftWheelR.setPower(-powerLeftR * 1);
+            rightWheelF.setPower(powerRightF * 1);
+            rightWheelR.setPower(powerRightR * 1);
         } else {
             powerLeftF = drive2 + strafe2 + rotateRight;
             powerLeftR = drive2 - strafe2 + rotateRight;
             powerRightF = drive2 - strafe2 - rotateLeft;
             powerRightR = drive2 + strafe2 - rotateLeft;
 
-            leftWheelF.setPower(-powerLeftF * 0.5);
-            leftWheelR.setPower(-powerLeftR * 0.5);
-            rightWheelF.setPower(powerRightF * 0.5);
-            rightWheelR.setPower(powerRightR * 0.5);
+            leftWheelF.setPower(-powerLeftF * 0.6);
+            leftWheelR.setPower(-powerLeftR * 0.6);
+            rightWheelF.setPower(powerRightF * 0.6);
+            rightWheelR.setPower(powerRightR * 0.6);
         }
 
         telemetry.addData("Servo Pos", rotateServo.getPosition());
