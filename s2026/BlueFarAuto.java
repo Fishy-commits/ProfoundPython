@@ -64,40 +64,60 @@ public class BlueFarAuto extends LinearOpMode {
         waitForStart();
 
         if (opModeIsActive()) {
-        move(700,0,0,0.5,500);
-        gyroTurnRelative(30);
-        sleep(500);
-        intakeLiftUp();
-        sleep(700);
+        move(400,0,0,0.3,500);
+        gyroTurnRelative(28);
         intakeOut();
-        sleep(1500);
+        sleep(250);
         blockerOut();
-        sleep(1000);
+        sleep(1200);
         pushOut();
-        sleep(700);
+        sleep(100);
         pushBack();
-        sleep(700);
+        sleep(100);
         rotateServoNext();
-        sleep(1000);
+        sleep(1500);
         pushOut();
-        sleep(1000);
+        sleep(100);
         pushBack();
+        sleep(100);
+        rotateServoNext(); // move to third position
+        sleep(2000);
+        pushOut();
+        sleep(100);
+        pushBack();
+        rotateServoNext(); // move to third position
+        sleep(1500);
+        pushOut();
+        sleep(100);
+        pushBack();
+        sleep(500);
+        move(2000,0,0,0.5,500);
+        intakeLiftDown();
+        intakeIn();
+        gyroTurnRelative(-35);
+        gyroTurnRelative(90);
+        move(0,600,0,0.5,500);
+        move(2500,0,0,0.8,500);
+        move(-2000,0,0,0.8,500);
+        gyroTurnRelative(-60);
+        move(-1700,0,0,0.5,500);
+        intakeLiftUp();
+        intakeOut();
+        sleep(500);
+        sleep(500);
+        pushOut();
+        sleep(250);
+        pushBack();
+        rotateServoNext();
         sleep(700);
-        rotateServoNext(); // move to third position
-        sleep(1000);
         pushOut();
-        sleep(1000);
+        sleep(250);
         pushBack();
-        rotateServoNext(); // move to third position
-        sleep(1000);
+        sleep(250);
+        rotateServoNext();
+        sleep(700);
         pushOut();
-        sleep(1000);
-        pushBack();
-        sleep(1000);
-        rotateServoNext(); // move to third position
-        sleep(1000);
-        pushOut();
-        sleep(1000);
+        sleep(250);
         pushBack();
         }
     }
@@ -138,8 +158,8 @@ public class BlueFarAuto extends LinearOpMode {
 
     private void initPosition() {
         // Set starting lift target positions
-        targetL = -325;
-        targetR = 325;
+        targetL = -230;
+        targetR = 260;
 
         intakeLiftL.setTargetPosition(targetL);
         intakeLiftR.setTargetPosition(targetR);
@@ -420,20 +440,25 @@ private int getAprilTagID() {
     
         /** Spins intake wheels inward (to collect) */
     private void intakeIn() {
-        intakeWheelL.setPower(-intakePower * 0.62);
-        intakeWheelR.setPower(intakePower * 0.62);
+        intakeWheelL.setPower(-intakePower * 0.5);
+        intakeWheelR.setPower(intakePower * 0.5);
     }
 
     /** Spins intake wheels outward (to eject) */
     private void intakeOut() {
-        intakeWheelL.setPower(intakePower * 0.58);
-        intakeWheelR.setPower(-intakePower * 0.58);
+        intakeWheelL.setPower(intakePower * 0.6);
+        intakeWheelR.setPower(-intakePower * 0.6);
+    }
+    /** Spins intake wheels outward (to eject) */
+    private void intakeOutClose() {
+        intakeWheelL.setPower(intakePower * 0.54);
+        intakeWheelR.setPower(-intakePower * 0.54);
     }
 
     /** Lifts intake up */
     private void intakeLiftUp() {
-        targetL = -325;
-        targetR = 325;
+        targetL = -260;
+        targetR = 260;
 
         intakeLiftL.setTargetPosition(targetL);
         intakeLiftR.setTargetPosition(targetR);
@@ -447,8 +472,8 @@ private int getAprilTagID() {
 
     /** Lowers intake down */
     private void intakeLiftDown() {
-        targetL = -75;
-        targetR = 75;
+        targetL = -80;
+        targetR = 60;
 
         intakeLiftL.setTargetPosition(targetL);
         intakeLiftR.setTargetPosition(targetR);
@@ -462,13 +487,13 @@ private int getAprilTagID() {
     
     private void pushOut(){   
         pushL.setPosition(0.3);
-        pushR.setPosition(0.4);
+        pushR.setPosition(0.5);
         telemetry.addData("Status: ", "Close both claws");
         telemetry.update();
     }
     
     private void pushBack(){   
-        pushL.setPosition(0.7);
+        pushL.setPosition(0.8);
         pushR.setPosition(0);
         telemetry.addData("Status: ", "Open both claws");
         telemetry.update();
