@@ -64,41 +64,61 @@ public class RedFarAuto extends LinearOpMode {
         waitForStart();
 
         if (opModeIsActive()) {
-        move(700,0,0,0.5,500);
+        move(400,0,0,0.3,500);
         gyroTurnRelative(-35);
-        sleep(500);
-        intakeLiftUp();
-        sleep(700);
         intakeOut();
-        sleep(1500);
+        sleep(250);
         blockerOut();
-        sleep(1000);
+        sleep(1200);
         pushOut();
-        sleep(700);
+        sleep(100);
         pushBack();
-        sleep(700);
+        sleep(100);
         rotateServoNext();
-        sleep(1000);
+        sleep(1500);
         pushOut();
-        sleep(1000);
+        sleep(100);
         pushBack();
+        sleep(100);
+        rotateServoNext(); // move to third position
+        sleep(2000);
+        pushOut();
+        sleep(100);
+        pushBack();
+        rotateServoNext(); // move to third position
+        sleep(1500);
+        pushOut();
+        sleep(100);
+        pushBack();
+        sleep(500);
+        move(2000,0,0,0.5,500);
+        intakeLiftDown();
+        intakeIn();
+        gyroTurnRelative(25);
+        gyroTurnRelative(-95);
+        move(0,-1200,0,0.5,500);
+        move(2000,0,0,0.7,600);
+        move(-2000,0,0,1,500);
+        gyroTurnRelative(55);
+        move(-1700,0,0,0.5,500);
+        intakeLiftUp();
+        intakeOut();
+        sleep(500);
+        pushOut();
+        sleep(250);
+        pushBack();
+        rotateServoNext();
         sleep(700);
-        rotateServoNext(); // move to third position
-        sleep(1000);
         pushOut();
-        sleep(1000);
+        sleep(250);
         pushBack();
-        rotateServoNext(); // move to third position
-        sleep(1000);
+        sleep(250);
+        rotateServoNext();
+        sleep(700);
         pushOut();
-        sleep(1000);
+        sleep(250);
         pushBack();
-        sleep(1000);
-        rotateServoNext(); // move to third position
-        sleep(1000);
-        pushOut();
-        sleep(1000);
-        pushBack();
+        
         }
     }
 
@@ -138,8 +158,8 @@ public class RedFarAuto extends LinearOpMode {
 
     private void initPosition() {
         // Set starting lift target positions
-        targetL = -325;
-        targetR = 325;
+        targetL = -230;
+        targetR = 260;
 
         intakeLiftL.setTargetPosition(targetL);
         intakeLiftR.setTargetPosition(targetR);
@@ -224,6 +244,9 @@ private void caseLoc() {
         pushOut();
         sleep(1000);
         pushBack();
+        move(500,5090,0,0.5,600);
+        intakeLiftDown();
+        intakeIn();
     } else if (tagID == 22) {
         tag22 = true;
         telemetry.addLine("Performing path for Tag 22");
@@ -251,7 +274,9 @@ private void caseLoc() {
         pushOut();
         sleep(1000);
         pushBack();
-        sleep(700);
+        move(500,5090,0,0.5,600);
+        intakeLiftDown();
+        intakeIn();
     } else if (tagID == 23) {
         tag23 = true;
         telemetry.addLine("Performing path for Tag 23");
@@ -279,7 +304,9 @@ private void caseLoc() {
         pushOut();
         sleep(1000);
         pushBack();
-        sleep(700);
+        move(500,5090,0,0.5,600);
+        intakeLiftDown();
+        intakeIn();
     }
      else {
         telemetry.addLine("No valid AprilTag detected.");
@@ -420,20 +447,25 @@ private int getAprilTagID() {
     
         /** Spins intake wheels inward (to collect) */
     private void intakeIn() {
-        intakeWheelL.setPower(-intakePower * 0.62);
-        intakeWheelR.setPower(intakePower * 0.62);
+        intakeWheelL.setPower(-intakePower * 0.5);
+        intakeWheelR.setPower(intakePower * 0.5);
     }
 
     /** Spins intake wheels outward (to eject) */
     private void intakeOut() {
-        intakeWheelL.setPower(intakePower * 0.58);
-        intakeWheelR.setPower(-intakePower * 0.58);
+        intakeWheelL.setPower(intakePower * 0.6);
+        intakeWheelR.setPower(-intakePower * 0.6);
+    }
+    /** Spins intake wheels outward (to eject) */
+    private void intakeOutClose() {
+        intakeWheelL.setPower(intakePower * 0.54);
+        intakeWheelR.setPower(-intakePower * 0.54);
     }
 
     /** Lifts intake up */
     private void intakeLiftUp() {
-        targetL = -325;
-        targetR = 325;
+        targetL = -280;
+        targetR = 280;
 
         intakeLiftL.setTargetPosition(targetL);
         intakeLiftR.setTargetPosition(targetR);
@@ -447,8 +479,8 @@ private int getAprilTagID() {
 
     /** Lowers intake down */
     private void intakeLiftDown() {
-        targetL = -75;
-        targetR = 75;
+        targetL = -120;
+        targetR = 100;
 
         intakeLiftL.setTargetPosition(targetL);
         intakeLiftR.setTargetPosition(targetR);
