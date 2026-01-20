@@ -65,12 +65,74 @@ public class BlueNearAuto extends LinearOpMode {
 
         if (opModeIsActive()) {
         move(9000,0,0,0.9,500);
-        move(9000,0,0,0.9,500);
-        move(8000,0,0,0.7,500);
-        move(6000,0,0,0.7,500);
-        gyroTurnRelative(70);
-        gyroTurnRelative(80);
-        caseLoc(); 
+        move(9000,0,0,0.7,500);
+        move(9000,0,0,0.6,500);
+        move(1000,0,0,0.7,500);
+        gyroTurnRelative(90);
+        gyroTurnRelative(98);
+        intakeLiftUp();
+        intakeOut();
+        sleep(1000);
+        blockerOut();
+        sleep(900);
+        pushOut();
+        sleep(250);
+        pushBack();
+        sleep(500);
+        rotateServoNext(); // move to second position
+        sleep(700);
+        pushOut();
+        sleep(250);
+        pushBack();
+        sleep(500);
+        rotateServoNext(); // move to third position
+        sleep(700);
+        pushOut();
+        sleep(250);
+        pushBack();
+        sleep(500);
+        rotateServoNext(); // move to third position
+        sleep(700);
+        pushOut();
+        sleep(250);
+        pushBack();
+        sleep(500);
+        intakeLiftDown();
+        intakeIn();
+        gyroTurnRelative(40);
+        move(8000,0,0,0.9,500);
+        move(8000,0,0,0.9,500);
+        sleep(1000);
+        move(-7000,0,0,1,500);
+        sleep(1000);
+        gyroTurnRelative(-50);
+        intakeLiftUp();
+        sleep(1000);
+        intakeOut();
+        sleep(1000);
+        pushOut();
+        sleep(250);
+        pushBack();
+        sleep(700);
+        rotateServoNext(); // move to second position
+        sleep(700);
+        pushOut();
+        sleep(250);
+        pushBack();
+        sleep(700);
+        rotateServoNext(); // move to third position
+        sleep(700);
+        pushOut();
+        sleep(250);
+        pushBack();
+        sleep(500);
+        rotateServoNext(); // move to third position
+        sleep(700);
+        pushOut();
+        sleep(250);
+        pushBack();
+        sleep(500);
+        
         }
     }
 
@@ -110,8 +172,8 @@ public class BlueNearAuto extends LinearOpMode {
 
     private void initPosition() {
         // Set starting lift target positions
-        targetL = -325;
-        targetR = 325;
+        targetL = -230;
+        targetR = 260;
 
         intakeLiftL.setTargetPosition(targetL);
         intakeLiftR.setTargetPosition(targetR);
@@ -392,20 +454,20 @@ private int getAprilTagID() {
     
         /** Spins intake wheels inward (to collect) */
     private void intakeIn() {
-        intakeWheelL.setPower(-intakePower * 0.52);
-        intakeWheelR.setPower(intakePower * 0.52);
+        intakeWheelL.setPower(-intakePower * 0.5);
+        intakeWheelR.setPower(intakePower * 0.5);
     }
 
     /** Spins intake wheels outward (to eject) */
     private void intakeOut() {
-        intakeWheelL.setPower(intakePower * 0.52);
-        intakeWheelR.setPower(-intakePower * 0.52);
+        intakeWheelL.setPower(intakePower * 0.5);
+        intakeWheelR.setPower(-intakePower * 0.5);
     }
 
     /** Lifts intake up */
     private void intakeLiftUp() {
-        targetL = -320;
-        targetR = 320;
+        targetL = -280;
+        targetR = 280;
 
         intakeLiftL.setTargetPosition(targetL);
         intakeLiftR.setTargetPosition(targetR);
@@ -419,8 +481,8 @@ private int getAprilTagID() {
 
     /** Lowers intake down */
     private void intakeLiftDown() {
-        targetL = -75;
-        targetR = 75;
+        targetL = -80;
+        targetR = 60;
 
         intakeLiftL.setTargetPosition(targetL);
         intakeLiftR.setTargetPosition(targetR);
@@ -434,13 +496,13 @@ private int getAprilTagID() {
     
     private void pushOut(){   
         pushL.setPosition(0.3);
-        pushR.setPosition(0.4);
+        pushR.setPosition(0.5);
         telemetry.addData("Status: ", "Close both claws");
         telemetry.update();
     }
     
     private void pushBack(){   
-        pushL.setPosition(0.7);
+        pushL.setPosition(0.8);
         pushR.setPosition(0);
         telemetry.addData("Status: ", "Open both claws");
         telemetry.update();
