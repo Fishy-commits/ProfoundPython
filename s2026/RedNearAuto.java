@@ -66,12 +66,75 @@ public class RedNearAuto extends LinearOpMode {
         if (opModeIsActive()) {
         move(9000,0,0,0.9,500);
         move(9000,0,0,0.7,500);
-        move(9000,0,0,0.5,500);
-        move(9000,0,0,0.5,500);
-        move(4500,0,0,0.5,500);
-        gyroTurnRelative(125); 
-        gyroTurnRelative(125);
-        caseLoc();
+        move(9000,0,0,0.6,500);
+        move(1000,0,0,0.7,500);
+        gyroTurnRelative(90);
+        gyroTurnRelative(98);
+        intakeLiftUp();
+        intakeOut();
+        sleep(1000);
+        blockerOut();
+        sleep(900);
+        pushOut();
+        sleep(500);
+        pushBack();
+        sleep(500);
+        rotateServoNext(); // move to second position
+        sleep(700);
+        pushOut();
+        sleep(500);
+        pushBack();
+        sleep(500);
+        rotateServoNext(); // move to third position
+        sleep(700);
+        pushOut();
+        sleep(500);
+        pushBack();
+        sleep(500);
+        rotateServoNext(); // move to third position
+        sleep(700);
+        pushOut();
+        sleep(500);
+        pushBack();
+        sleep(500);
+        intakeLiftDown();
+        intakeIn();
+        gyroTurnRelative(-45);
+        move(8000,0,0,0.9,500);
+        move(8000,0,0,0.9,500);
+        sleep(1000);
+        move(-7000,0,0,1,500);
+        sleep(1000);
+        gyroTurnRelative(55);
+        intakeLiftUp();
+        sleep(1000);
+        intakeOut();
+        sleep(1000);
+        pushOut();
+        sleep(250);
+        pushBack();
+        sleep(700);
+        rotateServoNext(); // move to second position
+        sleep(700);
+        pushOut();
+        sleep(250);
+        pushBack();
+        sleep(700);
+        rotateServoNext(); // move to third position
+        sleep(700);
+        pushOut();
+        sleep(250);
+        pushBack();
+        sleep(500);
+        rotateServoNext(); // move to third position
+        sleep(700);
+        pushOut();
+        sleep(250);
+        pushBack();
+        sleep(500);
+        sleep(456764);
+        
+        
         }
     }
 
@@ -111,8 +174,8 @@ public class RedNearAuto extends LinearOpMode {
 
     private void initPosition() {
         // Set starting lift target positions
-        targetL = -325;
-        targetR = 325;
+        targetL = -230;
+        targetR = 260;
 
         intakeLiftL.setTargetPosition(targetL);
         intakeLiftR.setTargetPosition(targetR);
@@ -393,20 +456,20 @@ private int getAprilTagID() {
     
         /** Spins intake wheels inward (to collect) */
     private void intakeIn() {
-        intakeWheelL.setPower(-intakePower * 0.62);
-        intakeWheelR.setPower(intakePower * 0.62);
+        intakeWheelL.setPower(-intakePower * 0.5);
+        intakeWheelR.setPower(intakePower * 0.5);
     }
 
     /** Spins intake wheels outward (to eject) */
     private void intakeOut() {
-        intakeWheelL.setPower(intakePower * 0.52);
-        intakeWheelR.setPower(-intakePower * 0.52);
+        intakeWheelL.setPower(intakePower * 0.5);
+        intakeWheelR.setPower(-intakePower * 0.5);
     }
 
     /** Lifts intake up */
     private void intakeLiftUp() {
-        targetL = -320;
-        targetR = 320;
+        targetL = -280;
+        targetR = 280;
 
         intakeLiftL.setTargetPosition(targetL);
         intakeLiftR.setTargetPosition(targetR);
@@ -420,8 +483,8 @@ private int getAprilTagID() {
 
     /** Lowers intake down */
     private void intakeLiftDown() {
-        targetL = -75;
-        targetR = 75;
+        targetL = -110;
+        targetR = 90;
 
         intakeLiftL.setTargetPosition(targetL);
         intakeLiftR.setTargetPosition(targetR);
